@@ -3,7 +3,6 @@
 # Check if SSH key already exists
 if [ -f "$HOME/.ssh/id_ed25519" ]; then
     echo "✅ SSH key already exists, skipping generation"
-    exit 0
 else
     echo "🔑 No SSH key found. Generating a new one..."
 
