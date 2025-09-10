@@ -31,7 +31,6 @@ else
     echo ""
 fi
 
-echo ""
 echo "Testing GitHub SSH connection..."
 if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
     echo "✅ SSH authentication successful!"
