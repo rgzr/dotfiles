@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Check if SSH key already exists
+if [ -f "$HOME/.ssh/id_ed25519" ]; then
+    echo "✅ SSH key already exists, skipping generation"
+    exit 0
+else
+    echo "🔑 No SSH key found. Generating a new one..."
+
+    # Create .ssh directory if it doesn't exist
+    mkdir -p "$HOME/.ssh"
+    chmod 700 "$HOME/.ssh"
+
+    # Generate SSH key with email from chezmoi data
+    ssh-keygen -t ed25519 -C "{{ .email }} ({{ .chezmoi.hostname }})" -f "$HOME/.ssh/id_ed25519"
+
+    # Set correct permissions
+    chmod 600 "$HOME/.ssh/id_ed25519"
+    chmod 644 "$HOME/.ssh/id_ed25519.pub"
+
+    echo ""
+    echo "🎉 NEW SSH KEY GENERATED!"
+    echo ""
+    echo "📋 Copy this public key:"
+    echo ""
+    cat "$HOME/.ssh/id_ed25519.pub"
+    echo ""
+    echo "👉 Add it to GitHub at:"
+    echo "   https://github.com/settings/keys"
+    echo ""
+    echo "   Suggested name: {{ .chezmoi.hostname }}-{{ .chezmoi.os }}"
+    echo ""
+fi
+
+echo ""
+echo "Testing GitHub SSH connection..."
+if ssh -T git@github.com 2>&1 | grep -q "successfully authenticated"; then
+    echo "✅ SSH authentication successful!"
+    echo "Switching chezmoi repository to SSH..."
+    cd "{{ .chezmoi.sourceDir }}"
+    git remote set-url origin git@github.com:rgzr/dotfiles.git
+    echo "✅ Repository switched to SSH!"
+else
+    echo "⚠️  SSH connection failed. You can switch to SSH later with:"
+    echo "   cd {{ .chezmoi.sourceDir }}"
+    echo "   git remote set-url origin git@github.com:rgzr/dotfiles.git"
+fi

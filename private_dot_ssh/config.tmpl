@@ -1,0 +1,12 @@
+Host github.com
+    HostName github.com
+    User git
+    AddKeysToAgent yes
+{{- if eq .chezmoi.os "darwin" }}
+    UseKeychain yes
+{{- end }}
+    IdentityFile ~/.ssh/id_ed25519
+
+Host *
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
